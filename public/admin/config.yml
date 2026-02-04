@@ -2,6 +2,7 @@ backend:
   name: github
   repo: seraph0153/gcs-website-v2
   branch: main # Branch to update (change to master if applicable)
+  site_url: "https://seraph0153.github.io/gcs-website-v2"
 
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
