@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: seraph0153/gcs-website-v2
   branch: main # Branch to update (change to master if applicable)
 
 media_folder: "public/images/uploads"
@@ -13,29 +14,52 @@ collections:
         name: "main_layout"
         file: "src/content/config/main_layout.json"
         fields:
-          - {label: "Hero Title", name: "hero_title", widget: "string"}
-          - {label: "Hero Subtitle", name: "hero_subtitle", widget: "string"}
-          - {label: "Hero Image", name: "hero_image", widget: "image"}
-          - {label: "Hero Button Text", name: "hero_button_text", widget: "string"}
-          - {label: "Hero Button Link", name: "hero_button_link", widget: "string"}
-          
+          - { label: "Hero Title", name: "hero_title", widget: "string" }
+          - { label: "Hero Subtitle", name: "hero_subtitle", widget: "string" }
+          - { label: "Hero Image", name: "hero_image", widget: "image" }
+          - {
+              label: "Hero Button Text",
+              name: "hero_button_text",
+              widget: "string",
+            }
+          - {
+              label: "Hero Button Link",
+              name: "hero_button_link",
+              widget: "string",
+            }
+
   - name: "news"
     label: "News & Notices"
     folder: "src/content/news"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Category", name: "category", widget: "select", options: ["공지사항", "학교소식", "가정통신문"]}
-      - {label: "Featured Image", name: "thumbnail", widget: "image", required: false}
-      - {label: "Body", name: "body", widget: "markdown"}
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - {
+          label: "Category",
+          name: "category",
+          widget: "select",
+          options: ["공지사항", "학교소식", "가정통신문"],
+        }
+      - {
+          label: "Featured Image",
+          name: "thumbnail",
+          widget: "image",
+          required: false,
+        }
+      - { label: "Body", name: "body", widget: "markdown" }
 
   - name: "gallery"
     label: "Gallery"
     folder: "src/content/gallery"
     create: true
     fields:
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Date", name: "date", widget: "datetime"}
-      - {label: "Images", name: "images", widget: "list", field: {label: "Image", name: "image", widget: "image"}}
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - {
+          label: "Images",
+          name: "images",
+          widget: "list",
+          field: { label: "Image", name: "image", widget: "image" },
+        }
