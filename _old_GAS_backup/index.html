@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <?= config.site_title ?>
+  </title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- CSS -->
+  <?!= include('css/style.html'); ?>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="container header-container">
+      <div class="logo">
+        <!-- If logo URL exists in config, use it. Otherwise text. -->
+        <? if (config.logo_url) { ?>
+        <img src="<?= config.logo_url ?>" alt="<?= config.site_title ?>">
+        <? } else { ?>
+        <h1><a href="?page=home">
+            <?= config.site_title ?>
+          </a></h1>
+        <? } ?>
+      </div>
+
+      <nav class="desktop-nav">
+        <ul>
+          <? for (var i = 0; i < menu.length; i++) { ?>
+          <!-- Simple active check can be improved -->
+          <li><a href="<?= menu[i].url ?>" class="<?= initialPageId === menu[i].id ? 'active' : '' ?>">
+              <?= menu[i].name ?>
+            </a></li>
+          <? } ?>
+        </ul>
+      </nav>
+
+      <button id="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden">
+      <ul>
+        <? for (var i = 0; i < menu.length; i++) { ?>
+        <li><a href="<?= menu[i].url ?>">
+            <?= menu[i].name ?>
+          </a></li>
+        <? } ?>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="app">
+
+    <!-- Dynamic Content Injection Point -->
+    <? if (initialPageId === 'home') { ?>
+
+    <? 
+        // Default layout fallback if empty
+        if (!mainLayout || mainLayout.length === 0) {
+           mainLayout = [
+             {section_id: 'hero', title: 'Coram Deo', subtitle: 'Default Title'},
+             {section_id: 'features', title: 'Features'},
+             {section_id: 'news', title: 'News'}
+           ];
+        }
+      ?>
+
+    <? for (var i = 0; i < mainLayout.length; i++) { 
+           var section = mainLayout[i];
+           // Construct style string
+           var style = '';
+           if (section.background_url) {
+             style += 'background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(' + section.background_url + ') center/cover;';
+           } else if (section.background_color) {
+             style += 'background-color: ' + section.background_color + ';';
+           }
+           if (section.text_color) {
+             style += 'color: ' + section.text_color + ';';
+           }
+      ?>
+
+    <!-- HERO SECTION -->
+    <? if (section.section_id === 'hero') { ?>
+    <section class="hero" style="<?= style ?>">
+      <div class="hero-overlay" style="<?= section.background_url ? '' : 'display:none' ?>"></div>
+      <div class="container hero-content">
+        <h2>
+          <?= section.title ?>
+        </h2>
+        <p>
+          <?= section.subtitle ?>
+        </p>
+        <? if (section.button_text) { ?>
+        <div class="hero-buttons">
+          <a href="<?= section.button_link || '#' ?>" class="btn btn-primary">
+            <?= section.button_text ?>
+          </a>
+        </div>
+        <? } ?>
+      </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <? } else if (section.section_id === 'features') { ?>
+    <section class="section features" style="<?= style ?>">
+      <div class="container">
+        <div class="section-title">
+          <span style="<?= section.text_color ? 'color:' + section.text_color : '' ?>">
+            <?= section.subtitle ?>
+          </span>
+          <h3 style="<?= section.text_color ? 'color:' + section.text_color : '' ?>">
+            <?= section.title ?>
+          </h3>
+        </div>
+        <div class="grid-4">
+          <div class="card feature-card">
+            <div class="icon-circle"><i class="fas fa-bible"></i></div>
+            <h4>성경적 교육</h4>
+            <p>절대 진리인 성경을 모든 교육의 기초로 삼습니다.</p>
+          </div>
+          <div class="card feature-card">
+            <div class="icon-circle"><i class="fas fa-school"></i></div>
+            <h4>정식 인가</h4>
+            <p>경기도교육청 등록 대안교육기관으로 신뢰할 수 있습니다.</p>
+          </div>
+          <div class="card feature-card">
+            <div class="icon-circle"><i class="fas fa-heart"></i></div>
+            <h4>전인 교육</h4>
+            <p>영성, 인성, 지성의 균형 잡힌 발달을 추구합니다.</p>
+          </div>
+          <div class="card feature-card">
+            <div class="icon-circle"><i class="fas fa-users"></i></div>
+            <h4>사랑의 공동체</h4>
+            <p>서로 사랑하고 섬기는 아름다운 학교 문화를 만들어갑니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWS SECTION -->
+    <? } else if (section.section_id === 'news') { ?>
+    <section class="section news-section" style="<?= style ?>">
+      <div class="container">
+        <div class="section-title">
+          <span style="<?= section.text_color ? 'color:' + section.text_color : '' ?>">
+            <?= section.subtitle ?>
+          </span>
+          <h3 style="<?= section.text_color ? 'color:' + section.text_color : '' ?>">
+            <?= section.title ?>
+          </h3>
+        </div>
+        <!-- Force news grid items to have standard color text if section is dark, or inherit if not handled strictly. 
+                   For now, we leave inner cards as default style (usually white bg with dark text). -->
+        <div id="latest-news-grid" class="grid-3">
+          <div class="loading-spinner">Loading News...</div>
+        </div>
+        <? if (section.button_text) { ?>
+        <div class="text-center mt-4">
+          <a href="<?= section.button_link || '?page=news' ?>" class="btn btn-secondary">
+            <?= section.button_text ?>
+          </a>
+        </div>
+        <? } ?>
+      </div>
+    </section>
+    <? } ?>
+
+    <? } /* end for */ ?>
+
+    <? } else if (initialPageId === 'contact' || initialPageId === 'admission') { ?>
+
+    <section class="page-header">
+      <div class="container">
+        <h2>
+          <?= initialPageId === 'admission' ? '입학 안내' : '문의하기' ?>
+        </h2>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="row">
+        <div class="col-half info-col">
+          <h3>Contact Info</h3>
+          <ul class="contact-list">
+            <li><i class="fas fa-phone"></i>
+              <?= config.phone ?>
+            </li>
+            <li><i class="fas fa-envelope"></i>
+              <?= config.admin_email ?>
+            </li> <!-- fallback to admin email key if needed -->
+            <li><i class="fas fa-map-marker-alt"></i>
+              <?= config.address ?>
+            </li>
+          </ul>
+        </div>
+        <div class="col-half form-col">
+          <h3>입학/문의 상담</h3>
+          <form id="inquiryForm">
+            <div class="form-group">
+              <label>이름</label>
+              <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+              <label>연락처</label>
+              <input type="tel" name="phone" required>
+            </div>
+            <div class="form-group">
+              <label>이메일</label>
+              <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label>자녀 학년 (입학 문의시)</label>
+              <input type="text" name="grade">
+            </div>
+            <div class="form-group">
+              <label>문의 내용</label>
+              <textarea name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary full-width">문의하기</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <? } else { ?>
+    <!-- GENERIC PAGE CONTENT (About, etc.) -->
+    <section class="page-header">
+      <div class="container">
+        <h2>
+          <?= initialPageId.toUpperCase() ?>
+        </h2>
+      </div>
+    </section>
+    <section class="section container" id="generic-content-area">
+      <div class="loading-spinner">Content Loading...</div>
+    </section>
+    <? } ?>
+
+  </main>
+
+  <!-- Footer -->
+  <footer id="main-footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <h3>
+          <?= config.site_title ?>
+        </h3>
+        <p>
+          <?= config.site_slogan ?>
+        </p>
+      </div>
+      <div class="footer-links">
+        <h4>바로가기</h4>
+        <ul>
+          <? for (var i = 0; i < menu.length; i++) { ?>
+          <li><a href="<?= menu[i].url ?>">
+              <?= menu[i].name ?>
+            </a></li>
+          <? } ?>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>연락처</h4>
+        <p>
+          <?= config.address ?>
+        </p>
+        <p>Tel:
+          <?= config.phone ?>
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom text-center">
+      <p>&copy;
+        <?= new Date().getFullYear() ?>
+        <?= config.site_title ?>. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <?!= include('js/client.js.html'); ?>
+
+</body>
+
+</html>
