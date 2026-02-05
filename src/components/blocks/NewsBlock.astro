@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title?: string;
+  count?: number;
+  bg_color?: "white" | "gray";
+}
+
+const { title = "School News", count = 3, bg_color = "white" } = Astro.props;
+
+// Fetch and sort news
+const allNews = await getCollection('news');
+const latestNews = allNews
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, count);
+
+const bgClass = bg_color === "gray" ? "bg-gray-100" : "bg-white";
+---
+
+<section class={`py-20 ${bgClass}`}>
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <span class="text-primary font-bold tracking-wider uppercase text-sm">Update</span>
+                <h2 class="text-3xl font-bold mt-2">{title}</h2>
+            </div>
+            <a href="/news" class="hidden md:inline-flex items-center text-primary hover:text-secondary font-medium transition">
+                전체보기
+                <span class="material-symbols-outlined ml-1">arrow_forward</span>
+            </a>
+        </div>
+        
+        {latestNews.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {latestNews.map(post => (
+                    <a href={`/news/${post.slug}`} class="group bg-white rounded-xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100 flex flex-col h-full">
+                        <div class="aspect-video bg-gray-200 overflow-hidden relative">
+                            {post.data.image ? (
+                                <img src={post.data.image} alt={post.data.title} class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                            ) : (
+                                <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                    <span class="material-symbols-outlined text-4xl">image</span>
+                                </div>
+                            )}
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-primary/90 text-white text-xs px-3 py-1 rounded-full">{post.data.category}</span>
+                            </div>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="text-gray-400 text-sm mb-2">{post.data.date.toISOString().split('T')[0]}</div>
+                            <h3 class="text-xl font-bold mb-3 text-gray-900 line-clamp-2 group-hover:text-primary transition">{post.data.title}</h3>
+                            <p class="text-gray-600 line-clamp-3 text-sm flex-grow">{post.body.substring(0, 100)}...</p>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        ) : (
+            <div class="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                <p class="text-gray-500">아직 등록된 소식이 없습니다.</p>
+            </div>
+        )}
+        
+        <div class="mt-8 text-center md:hidden">
+            <a href="/news" class="inline-flex items-center text-primary hover:text-secondary font-medium transition">
+                전체보기
+                <span class="material-symbols-outlined ml-1">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+</section>

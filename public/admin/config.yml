@@ -14,19 +14,134 @@ collections:
         name: "main_layout"
         file: "src/content/config/main_layout.json"
         fields:
-          - { label: "Hero Title", name: "hero_title", widget: "string" }
-          - { label: "Hero Subtitle", name: "hero_subtitle", widget: "string" }
-          - { label: "Hero Image", name: "hero_image", widget: "image" }
-          - {
-              label: "Hero Button Text",
-              name: "hero_button_text",
-              widget: "string",
-            }
-          - {
-              label: "Hero Button Link",
-              name: "hero_button_link",
-              widget: "string",
-            }
+          - label: "Page Sections (Blocks)"
+            name: "sections"
+            widget: "list"
+            types:
+              - label: "Hero (Main Banner)"
+                name: "hero"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Subtitle", name: "subtitle", widget: "string" }
+                  - {
+                      label: "Background Image",
+                      name: "image",
+                      widget: "image",
+                    }
+                  - {
+                      label: "Button Text",
+                      name: "button_text",
+                      widget: "string",
+                      required: false,
+                    }
+                  - {
+                      label: "Button Link",
+                      name: "button_link",
+                      widget: "string",
+                      required: false,
+                    }
+                  - {
+                      label: "Align Text",
+                      name: "align",
+                      widget: "select",
+                      options: ["left", "center"],
+                      default: "center",
+                    }
+
+              - label: "Features (3 Columns)"
+                name: "features"
+                widget: "object"
+                fields:
+                  - {
+                      label: "Background Color",
+                      name: "bg_color",
+                      widget: "select",
+                      options: ["white", "gray"],
+                      default: "white",
+                    }
+                  # Currently checking if we want dynamic feature items or fixed 3 types.
+                  # For simplicty/robustness, let's keep the existing structure but accessible via this block.
+                  # Or better, let them edit the 3 items here.
+                  - label: "Feature Items"
+                    name: "items"
+                    widget: "list"
+                    min: 3
+                    max: 3
+                    fields:
+                      - { label: "Title", name: "title", widget: "string" }
+                      - {
+                          label: "Description",
+                          name: "description",
+                          widget: "text",
+                        }
+                      - {
+                          label: "Icon Name (Material Icon)",
+                          name: "icon",
+                          widget: "string",
+                          hint: "e.g., school, menu_book, diversity_3",
+                        }
+
+              - label: "Content (Text & Image)"
+                name: "content"
+                widget: "object"
+                fields:
+                  - {
+                      label: "Title",
+                      name: "title",
+                      widget: "string",
+                      required: false,
+                    }
+                  - {
+                      label: "Content (Markdown)",
+                      name: "body",
+                      widget: "markdown",
+                    }
+                  - {
+                      label: "Image",
+                      name: "image",
+                      widget: "image",
+                      required: false,
+                    }
+                  - {
+                      label: "Image Position",
+                      name: "image_pos",
+                      widget: "select",
+                      options: ["left", "right"],
+                      default: "right",
+                    }
+                  - {
+                      label: "Background Color",
+                      name: "bg_color",
+                      widget: "select",
+                      options: ["white", "gray"],
+                      default: "white",
+                    }
+
+              - label: "Latest News (Auto)"
+                name: "news"
+                widget: "object"
+                fields:
+                  - {
+                      label: "Section Title",
+                      name: "title",
+                      widget: "string",
+                      default: "School News",
+                    }
+                  - {
+                      label: "Count",
+                      name: "count",
+                      widget: "number",
+                      default: 3,
+                      value_type: "int",
+                    }
+                  - {
+                      label: "Background Color",
+                      name: "bg_color",
+                      widget: "select",
+                      options: ["white", "gray"],
+                      default: "white",
+                    }
 
   - name: "news"
     label: "News & Notices"

@@ -1,0 +1,41 @@
+---
+interface Props {
+  title: string;
+  subtitle: string;
+  image?: string;
+  button_text?: string;
+  button_link?: string;
+  align?: "left" | "center";
+}
+
+const { title, subtitle, image, button_text, button_link, align = "center" } = Astro.props;
+
+const alignmentClass = align === "left" ? "text-left items-start" : "text-center items-center justify-center";
+const containerAlign = align === "left" ? "mx-0" : "mx-auto";
+---
+
+<section class={`relative h-[600px] flex ${alignmentClass} text-white bg-gray-900`}>
+    <div class="absolute inset-0 overflow-hidden">
+        <!-- Fallback gradient if no image -->
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900 opacity-90"></div>
+        {image && <img src={image} class="w-full h-full object-cover opacity-50" />}
+    </div>
+    
+    <div class={`relative z-10 max-w-7xl w-full px-4 sm:px-6 lg:px-8 ${align === 'center' ? 'mx-auto' : ''}`}>
+        <div class={`max-w-3xl ${containerAlign}`}>
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                {title}
+            </h1>
+            <p class="text-xl md:text-2xl mb-10 text-gray-200 font-light">
+                {subtitle}
+            </p>
+            {button_text && button_link && (
+                <div class={`flex ${align === 'left' ? 'justify-start' : 'justify-center'} gap-4`}>
+                    <a href={button_link} class="px-8 py-3 bg-secondary hover:bg-orange-600 text-white font-bold rounded-full transition duration-300 transform hover:scale-105 shadow-lg">
+                        {button_text}
+                    </a>
+                </div>
+            )}
+        </div>
+    </div>
+</section>

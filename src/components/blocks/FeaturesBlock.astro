@@ -1,0 +1,38 @@
+---
+interface Props {
+  bg_color?: "white" | "gray";
+  items: {
+    title: string;
+    description: string;
+    icon: string;
+  }[];
+}
+
+const { bg_color = "white", items = [] } = Astro.props;
+
+const bgClass = bg_color === "gray" ? "bg-gray-100" : "bg-white";
+---
+
+<section class={`py-20 ${bgClass}`}>
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <span class="text-primary font-bold tracking-wider uppercase text-sm">Why GCS?</span>
+            <h2 class="text-3xl font-bold mt-2">그레이스기독학교의 특징</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {items.map(feature => (
+                <div class="p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 text-center group border border-gray-100">
+                    <div class="text-5xl mb-6 text-primary material-symbols-outlined group-hover:scale-110 transition duration-300 inline-block">
+                        {feature.icon || "star"}
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">{feature.title}</h3>
+                    <p class="text-gray-600 leading-relaxed">{feature.description}</p>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<!-- Material Icons Import (if not already in Layout) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
