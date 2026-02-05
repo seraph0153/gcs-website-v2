@@ -1,25 +1,46 @@
-// Hero Block
-const HeroPreview = ({ title, subtitle, image, button_text, button_link, align }) => {
+// Hero Block (Slider)
+const HeroPreview = ({ slides }) => {
+    // Simple check to ensure slides is iterable
+    const slideList = (slides && slides.toJS) ? slides.toJS() : [];
+
+    if (!slideList || slideList.length === 0) {
+        return (
+            <section className="relative h-[600px] flex items-center justify-center bg-gray-900 text-white">
+                <p>Please add a slide to see the preview</p>
+            </section>
+        );
+    }
+
+    // Show only the first slide for preview simplicity, or a stack?
+    // Let's show the first slide as 'Active'
+    const slide = slideList[0];
+    const align = slide.align || 'center';
     const alignClass = align === 'left' ? 'text-left items-start' : 'text-center items-center justify-center';
     const containerAlign = align === 'left' ? 'mx-0' : 'mx-auto';
 
     return (
-        <section className={`relative h-[600px] flex ${alignClass} text-white bg-gray-900`}>
+        <section className={`relative h-[600px] flex ${alignClass} text-white bg-gray-900 border-b-4 border-orange-500`}>
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900 opacity-90"></div>
-                {image && <img src={image} className="w-full h-full object-cover opacity-50" />}
+                {slide.image && <img src={slide.image} className="w-full h-full object-cover opacity-50" />}
             </div>
             <div className={`relative z-10 max-w-7xl w-full px-4 ${align === 'center' ? 'mx-auto' : ''}`}>
                 <div className={`max-w-3xl ${containerAlign}`}>
-                    <h1 className="text-5xl font-bold mb-6">{title}</h1>
-                    <p className="text-xl mb-10 text-gray-200">{subtitle}</p>
-                    {button_text && (
+                    <div className="mb-4 bg-orange-500 text-white text-xs px-2 py-1 inline-block rounded">PREVIEWING SLIDE 1 OF {slideList.length}</div>
+                    <h1 className="text-5xl font-bold mb-6">{slide.title}</h1>
+                    <p className="text-xl mb-10 text-gray-200">{slide.subtitle}</p>
+                    {slide.button_text && (
                         <div className={`flex ${align === 'left' ? 'justify-start' : 'justify-center'}`}>
-                            <a className="px-8 py-3 bg-orange-500 text-white font-bold rounded-full">{button_text}</a>
+                            <a className="px-8 py-3 bg-orange-500 text-white font-bold rounded-full">{slide.button_text}</a>
                         </div>
                     )}
                 </div>
             </div>
+            {slideList.length > 1 && (
+                <div className="absolute bottom-4 left-0 right-0 text-center text-xs text-gray-400">
+                    (Preview shows first slide only)
+                </div>
+            )}
         </section>
     );
 };

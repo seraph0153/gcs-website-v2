@@ -1,41 +1,184 @@
 ---
 interface Props {
-  title: string;
-  subtitle: string;
-  image?: string;
-  button_text?: string;
-  button_link?: string;
-  align?: "left" | "center";
+  slides: {
+    image: string;
+    title: string;
+    subtitle: string;
+    button_text?: string;
+    button_link?: string;
+    align?: "left" | "center";
+  }[];
+  speed?: number;
 }
 
-const { title, subtitle, image, button_text, button_link, align = "center" } = Astro.props;
-
-const alignmentClass = align === "left" ? "text-left items-start" : "text-center items-center justify-center";
-const containerAlign = align === "left" ? "mx-0" : "mx-auto";
+const { slides = [], speed = 5 } = Astro.props;
+// If user didn't migrate data yet, handle legacy single slide format gracefully?
+// Actually, let's assume valid data or empty array to keep it clean.
 ---
 
-<section class={`relative h-[600px] flex ${alignmentClass} text-white bg-gray-900`}>
-    <div class="absolute inset-0 overflow-hidden">
-        <!-- Fallback gradient if no image -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900 opacity-90"></div>
-        {image && <img src={image} class="w-full h-full object-cover opacity-50" />}
-    </div>
-    
-    <div class={`relative z-10 max-w-7xl w-full px-4 sm:px-6 lg:px-8 ${align === 'center' ? 'mx-auto' : ''}`}>
-        <div class={`max-w-3xl ${containerAlign}`}>
-            <h1 class="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                {title}
-            </h1>
-            <p class="text-xl md:text-2xl mb-10 text-gray-200 font-light">
-                {subtitle}
-            </p>
-            {button_text && button_link && (
-                <div class={`flex ${align === 'left' ? 'justify-start' : 'justify-center'} gap-4`}>
-                    <a href={button_link} class="px-8 py-3 bg-secondary hover:bg-orange-600 text-white font-bold rounded-full transition duration-300 transform hover:scale-105 shadow-lg">
-                        {button_text}
-                    </a>
+<section class="relative h-[600px] bg-gray-900 group overflow-hidden" data-speed={speed * 1000}>
+    <!-- Slides Container -->
+    <div class="hero-slider h-full w-full relative">
+        {slides.map((slide, index) => (
+            <div class={`slide absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`} data-index={index}>
+                <!-- Background -->
+                <div class="absolute inset-0 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-gray-900/80 z-10"></div>
+                    {slide.image && <img src={slide.image} class="w-full h-full object-cover transform scale-105 animate-slow-zoom" />}
                 </div>
-            )}
-        </div>
+                
+                <!-- Content -->
+                <div class={`relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center ${slide.align === 'left' ? 'items-start text-left' : 'items-center text-center'}`}>
+                    <div class="max-w-3xl animate-fade-up">
+                        <h1 class="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-white drop-shadow-lg">
+                            {slide.title}
+                        </h1>
+                        <p class="text-xl md:text-2xl mb-10 text-gray-100 font-light drop-shadow-md">
+                            {slide.subtitle}
+                        </p>
+                        {slide.button_text && slide.button_link && (
+                            <div class={`flex ${slide.align === 'left' ? 'justify-start' : 'justify-center'} gap-4`}>
+                                <a href={slide.button_link} class="px-8 py-3 bg-secondary hover:bg-orange-600 text-white font-bold rounded-full transition duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm bg-opacity-90">
+                                    {slide.button_text}
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        ))}
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="prev-slide absolute left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 hover:bg-white/30 text-white transition backdrop-blur-md hidden group-hover:flex">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+    <button class="next-slide absolute right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 hover:bg-white/30 text-white transition backdrop-blur-md hidden group-hover:flex">
+        <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+
+    <!-- Dots -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+        {slides.map((_, index) => (
+            <button class={`dot-btn w-3 h-3 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/80'}`} data-index={index}></button>
+        ))}
     </div>
 </section>
+
+<script>
+    class HeroSlider {
+        constructor(element) {
+            this.container = element;
+            this.slides = element.querySelectorAll('.slide');
+            this.dots = element.querySelectorAll('.dot-btn');
+            this.prevBtn = element.querySelector('.prev-slide');
+            this.nextBtn = element.querySelector('.next-slide');
+            
+            this.currentIndex = 0;
+            this.totalSlides = this.slides.length;
+            this.intervalSpeed = parseInt(element.dataset.speed) || 5000;
+            this.interval = null;
+
+            if (this.totalSlides > 1) {
+                this.init();
+            }
+        }
+
+        init() {
+            this.prevBtn?.addEventListener('click', () => {
+                this.stopAutoPlay();
+                this.prev();
+                this.startAutoPlay();
+            });
+
+            this.nextBtn?.addEventListener('click', () => {
+                this.stopAutoPlay();
+                this.next();
+                this.startAutoPlay();
+            });
+
+            this.dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    this.stopAutoPlay();
+                    this.goTo(index);
+                    this.startAutoPlay();
+                });
+            });
+
+            this.startAutoPlay();
+        }
+
+        goTo(index) {
+            if (index < 0) index = this.totalSlides - 1;
+            if (index >= this.totalSlides) index = 0;
+
+            // Remove active classes
+            this.slides[this.currentIndex].classList.remove('opacity-100', 'z-10');
+            this.slides[this.currentIndex].classList.add('opacity-0', 'z-0');
+            
+            this.dots[this.currentIndex].classList.remove('bg-white', 'w-8');
+            this.dots[this.currentIndex].classList.add('bg-white/50');
+
+            // Set new active classes
+            this.slides[index].classList.remove('opacity-0', 'z-0');
+            this.slides[index].classList.add('opacity-100', 'z-10');
+
+            this.dots[index].classList.remove('bg-white/50');
+            this.dots[index].classList.add('bg-white', 'w-8');
+
+            this.currentIndex = index;
+        }
+
+        next() {
+            this.goTo(this.currentIndex + 1);
+        }
+
+        prev() {
+            this.goTo(this.currentIndex - 1);
+        }
+
+        startAutoPlay() {
+            this.interval = setInterval(() => this.next(), this.intervalSpeed);
+        }
+
+        stopAutoPlay() {
+            if (this.interval) clearInterval(this.interval);
+        }
+    }
+
+    // Initialize all sliders on the page
+    document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll('.hero-slider').forEach(slider => {
+            // Find parent section to allow passing data-speed correctly if needed,
+            // or just use the section logic directly. Here the class is on the PARENT section??
+            // Ah, the script selects .hero-slider (div), but the data-speed is on the section.
+            // Let's adjust the selectorLogic a bit.
+            const section = slider.closest('section');
+            if (section) new HeroSlider(section);
+        });
+    });
+    
+    // Fallback for non-ViewTransitions
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('section[data-speed]').forEach(section => {
+             new HeroSlider(section);
+        });
+    });
+</script>
+
+<style>
+    @keyframes slow-zoom {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.1); }
+    }
+    .animate-slow-zoom {
+        animation: slow-zoom 20s infinite alternate;
+    }
+    .animate-fade-up {
+        animation: fadeUp 1s ease-out forwards;
+    }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

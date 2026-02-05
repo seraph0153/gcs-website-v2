@@ -18,35 +18,50 @@ collections:
             name: "sections"
             widget: "list"
             types:
-              - label: "Hero (Main Banner)"
+              - label: "Hero Slider (Carousel)"
                 name: "hero"
                 widget: "object"
                 fields:
-                  - { label: "Title", name: "title", widget: "string" }
-                  - { label: "Subtitle", name: "subtitle", widget: "string" }
+                  - label: "Slides"
+                    name: "slides"
+                    widget: "list"
+                    fields:
+                      - {
+                          label: "Background Image",
+                          name: "image",
+                          widget: "image",
+                        }
+                      - { label: "Title", name: "title", widget: "string" }
+                      - {
+                          label: "Subtitle",
+                          name: "subtitle",
+                          widget: "string",
+                        }
+                      - {
+                          label: "Button Text",
+                          name: "button_text",
+                          widget: "string",
+                          required: false,
+                        }
+                      - {
+                          label: "Button Link",
+                          name: "button_link",
+                          widget: "string",
+                          required: false,
+                        }
+                      - {
+                          label: "Align Text",
+                          name: "align",
+                          widget: "select",
+                          options: ["center", "left"],
+                          default: "center",
+                        }
                   - {
-                      label: "Background Image",
-                      name: "image",
-                      widget: "image",
-                    }
-                  - {
-                      label: "Button Text",
-                      name: "button_text",
-                      widget: "string",
-                      required: false,
-                    }
-                  - {
-                      label: "Button Link",
-                      name: "button_link",
-                      widget: "string",
-                      required: false,
-                    }
-                  - {
-                      label: "Align Text",
-                      name: "align",
-                      widget: "select",
-                      options: ["left", "center"],
-                      default: "center",
+                      label: "Auto Play Speed (seconds)",
+                      name: "speed",
+                      widget: "number",
+                      default: 5,
+                      value_type: "int",
                     }
 
               - label: "Features (3 Columns)"
