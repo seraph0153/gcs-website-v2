@@ -13,8 +13,6 @@ export default defineConfig({
     },
     integrations: [tailwind(), react()],
     output: 'static',
-    site: 'https://seraph0153.github.io',
-    base: '/gcs-website-v2',
     build: {
         format: 'file'
     }
